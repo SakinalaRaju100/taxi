@@ -111,7 +111,7 @@ const App = () => {
         });
         // console.log("Data saved successfully:", response.data);
         setAllData(response.data.data);
-        // mapFunc();
+
         mapFunc(response.data.data);
       } catch (error) {
         setAllData([]);
@@ -124,9 +124,7 @@ const App = () => {
     let locationArr = [17, 76];
     const storedData = localStorage.getItem("userObj");
     if (storedData) {
-      const userData = JSON.parse(storedData);
-      locationArr = userData?.currentCoordinates;
-      // console.log("mapCenter", userData?.currentCoordinates);
+      locationArr = currentCoordinates;
     }
 
     const a = document.getElementById("map");
@@ -179,7 +177,6 @@ const App = () => {
         // const a = document.getElementById("map");
         // a.style.display = "block"; // Show map
         await fetchAllData(); // Fetch vehicle data
-        // mapFunc(allData); // Initialize map
       } else {
         const a = document.getElementById("map");
         a.style.display = "none"; // Hide map
@@ -251,7 +248,8 @@ const App = () => {
   };
   const sendData = async () => {
     try {
-      await getCoordinates(); // Ensure coordinates are fetched first
+      const locat = await getCoordinates(); // Ensure coordinates are fetched first
+      console.log("locat", locat);
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         const userData = JSON.parse(storedData);
@@ -263,7 +261,7 @@ const App = () => {
             baseURL + "/api/taxi/add-taxi", // Updated API endpoint
             {
               ...userData, // Use userData to send the required information
-              location: userData.currentCoordinates,
+              location: locat,
               from: userData?.pickupLocation,
               to: userData?.dropLocation,
             }
@@ -274,7 +272,7 @@ const App = () => {
             baseURL + "/api/taxi/add-passenger", // Updated API endpoint
             {
               ...userData, // Use userData to send the required information
-              location: userData.currentCoordinates,
+              location: locat,
               from: userData?.pickupLocation,
               to: userData?.dropLocation,
             }
@@ -290,14 +288,25 @@ const App = () => {
 
   useEffect(() => {
     sendData();
-    const interval = setInterval(sendData, 10000); // Call sendData every 30 seconds
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
-  useEffect(() => {
     fetchAllData();
-    const interval = setInterval(fetchAllData, 15000); // Call sendData every 30 seconds
+
+    const interval = setInterval(() => {
+      sendData();
+      fetchAllData();
+    }, 10000);
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
+  // useEffect(() => {
+  //   if (userData) {
+  //     fetchAllData();
+  //   }
+  //   const interval = setInterval(() => {
+  //     if (userData) {
+  //       fetchAllData();
+  //     }
+  //   }, 10000); // Call sendData every 30 seconds
+  //   return () => clearInterval(interval); // Cleanup on unmount
+  // }, []);
 
   return (
     <div>
@@ -719,38 +728,6 @@ const App = () => {
                 dropLocation
               ) {
                 getCoordinates();
-                // let a = [];
-                // if (navigator.geolocation) {
-                //   await navigator.geolocation.getCurrentPosition(
-                //     async (position) => {
-                //       const { latitude, longitude } = position.coords;
-                //       a = [latitude, longitude];
-                //       await setCurrentCoordinates([latitude, longitude]);
-                //       console.log(
-                //         "Current Coordinatesq2:",
-                //         latitude,
-                //         longitude
-                //       );
-                //     },
-                //     (error) => {
-                //       console.error("Error getting location:", error);
-                //     }
-                //   );
-                // } else {
-                //   console.error(
-                //     "Geolocation is not supported by this browser."
-                //   );
-                // }
-
-                // console.log(
-                //   "name, mobile",
-                //   name,
-                //   mobile,
-                //   pickupLocation,
-                //   dropLocation,
-                //   currentCoordinates
-                //   // a
-                // );
 
                 try {
                   const response = await axios.post(
