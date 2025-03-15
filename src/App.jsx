@@ -110,7 +110,7 @@ const App = () => {
           role: userData?.role,
         });
         // console.log("Data saved successfully:", response.data);
-        setAllData(response.data.data);
+        await setAllData(response.data.data);
 
         mapFunc(response.data.data);
       } catch (error) {
@@ -128,7 +128,7 @@ const App = () => {
     // console.log("map", a);
     a.style.display = "block"; // Show map
     // Initialize the Leaflet map
-    const map = L.map("map").setView(locat, 15);
+    const map = L.map("map").setView(locat, 14);
 
     // Add OpenStreetMap tile layer
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -289,7 +289,7 @@ const App = () => {
       console.log("Refreshing...");
       // fetchAllData();
       window.location.reload();
-    }, 10000);
+    }, 15000);
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
