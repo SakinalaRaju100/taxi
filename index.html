@@ -1,13 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
+
+    <script src="https://unpkg.com/react@latest/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@latest/umd/react-dom.development.js"></script>
+
+    <!-- Material-UI -->
+    <script src="https://unpkg.com/@mui/material@latest/umd/material-ui.development.js"></script>
+
+    <!-- <script src="https://unpkg.com/@mui/material@5.14.11/umd/material-ui.development.js"></script> -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/react-swipeable-views@0.14.0/dist/index.umd.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Add Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    />
   </head>
   <body>
     <div id="root"></div>
+    <div
+      id="map"
+      style="
+        height: 400px;
+        width: 100%;
+        margin-top: 2px;
+        border: 1px solid orange;
+        border-radius: 6px;
+      "
+    ></div>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- Add Leaflet JavaScript -->
+    <!-- <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script> -->
+
+    <!-- Add Leaflet and Leaflet Routing Machine scripts -->
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
   </body>
 </html>
