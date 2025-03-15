@@ -120,27 +120,30 @@ const App = () => {
     }
   };
 
-  const mapFunc = (data) => {
-    let locationArr = [17, 76];
-    const storedData = localStorage.getItem("userObj");
-    if (storedData) {
-      locationArr = currentCoordinates;
-    }
+  const mapFunc = async (data) => {
+    const locat = await getCoordinates(); // Ensure coordinates are fetched first
+    console.log("locat", locat);
+
+    // let locationArr = [17, 76];
+    // const storedData = localStorage.getItem("userObj");
+    // if (storedData) {
+    //   locationArr = currentCoordinates;
+    // }
 
     const a = document.getElementById("map");
     console.log("map", a);
     a.style.display = "block"; // Show map
     // Initialize the Leaflet map
-    const map = L.map("map").setView(locationArr, 15);
+    const map = L.map("map").setView(locat, 15);
 
     // Add OpenStreetMap tile layer
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 16,
+      maxZoom: 17,
       attribution: "© OpenStreetMap",
     }).addTo(map);
 
     // var marker = L.marker([17.692118, 79.142845])
-    var marker = L.marker(locationArr).addTo(map).bindPopup(`you`).openPopup();
+    var marker = L.marker(locat).addTo(map).bindPopup(`you`).openPopup();
 
     // console.log("allDatea", allData);
 
