@@ -286,10 +286,14 @@ const App = () => {
 
     const interval = setInterval(() => {
       // sendData();
-      console.log("Refreshing...");
-      // fetchAllData();
-      window.location.reload();
-    }, 15000);
+
+      const storedData = localStorage.getItem("userObj");
+      if (storedData) {
+        console.log("Refreshing...");
+        // fetchAllData();
+        window.location.reload();
+      }
+    }, 30000);
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
