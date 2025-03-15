@@ -288,16 +288,16 @@ const App = () => {
     }
   };
 
-  // useEffect(() => {
-  //   sendData();
-  //   const interval = setInterval(sendData, 10000); // Call sendData every 30 seconds
-  //   return () => clearInterval(interval); // Cleanup on unmount
-  // }, []);
-  // useEffect(() => {
-  //   fetchAllData();
-  //   const interval = setInterval(fetchAllData, 15000); // Call sendData every 30 seconds
-  //   return () => clearInterval(interval); // Cleanup on unmount
-  // }, []);
+  useEffect(() => {
+    sendData();
+    const interval = setInterval(sendData, 10000); // Call sendData every 30 seconds
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+  useEffect(() => {
+    fetchAllData();
+    const interval = setInterval(fetchAllData, 15000); // Call sendData every 30 seconds
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
 
   return (
     <div>
