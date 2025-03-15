@@ -124,14 +124,8 @@ const App = () => {
     const locat = await getCoordinates(); // Ensure coordinates are fetched first
     console.log("locat", locat);
 
-    // let locationArr = [17, 76];
-    // const storedData = localStorage.getItem("userObj");
-    // if (storedData) {
-    //   locationArr = currentCoordinates;
-    // }
-
     const a = document.getElementById("map");
-    console.log("map", a);
+    // console.log("map", a);
     a.style.display = "block"; // Show map
     // Initialize the Leaflet map
     const map = L.map("map").setView(locat, 15);
@@ -149,43 +143,79 @@ const App = () => {
 
     // Add all markers from the allData array
 
-    // allData.forEach((marker) => {
-    data
-      // .filter((el) => el?.mobile != userData?.mobile)
-      .forEach((marker) => {
-        L.marker(marker.location, {
-          icon: L.icon({
-            // iconUrl: "./taxi.png",
-            iconUrl: marker.role == "taxi" ? "./taxi.png" : "./human.png",
-            // iconUrl: "/redCarTopViewIcon.png",
-            iconSize: [70, 70],
-          }),
-          maxZoom: 5, // Added maxZoom property to markers
-        })
-          .addTo(map)
-          .bindPopup(
-            // `${marker.name} - ${marker.mobile},  seats: ${marker.seats}`
-            `${marker.name} - ${marker.mobile}`
+    data.forEach((marker) => {
+      L.marker(marker.location, {
+        icon: L.icon({
+          // iconUrl: "./taxi.png",
+          iconUrl: marker.role == "taxi" ? "./taxi.png" : "./human.png",
+          // iconUrl: "/redCarTopViewIcon.png",
+          iconSize: [55, 55],
+        }),
+        maxZoom: 5, // Added maxZoom property to markers
+      })
+        .addTo(map)
+        .bindPopup(
+          // `${marker.name} - ${marker.mobile},  seats: ${marker.seats}`
+          `${marker.name} - ${marker.mobile} - ${marker.role}`
+        );
+      // .openPopup();
+    });
+  };
+
+  const sendData = async () => {
+    try {
+      const locat = await getCoordinates(); // Ensure coordinates are fetched first
+      console.log("locat", locat);
+      const storedData = localStorage.getItem("userObj");
+      if (storedData) {
+        const userData = JSON.parse(storedData);
+
+        // console.log("send Data1", userData);
+
+        if (userData?.role == "taxi") {
+          const response = await axios.post(
+            baseURL + "/api/taxi/add-taxi", // Updated API endpoint
+            {
+              ...userData, // Use userData to send the required information
+              location: locat,
+              from: userData?.pickupLocation,
+              to: userData?.dropLocation,
+            }
           );
-        // .openPopup();
-      });
+          // console.log("Data saved successfully:", response.data);
+        } else {
+          const response = await axios.post(
+            baseURL + "/api/taxi/add-passenger", // Updated API endpoint
+            {
+              ...userData, // Use userData to send the required information
+              location: locat,
+              from: userData?.pickupLocation,
+              to: userData?.dropLocation,
+            }
+          );
+          // console.log("Data saved successfully:", response.data);
+        }
+      }
+    } catch (error) {
+      console.log("No user Data to send");
+      console.error("Error saving data:", error);
+    }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      await getCoordinates(); // Ensure coordinates are fetched first
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         setUserData(JSON.parse(storedData));
         // const a = document.getElementById("map");
         // a.style.display = "block"; // Show map
-        await fetchAllData(); // Fetch vehicle data
+        await sendData();
+        await fetchAllData();
       } else {
         const a = document.getElementById("map");
         a.style.display = "none"; // Hide map
       }
     };
-
     fetchData(); // Call the async function
   }, []);
 
@@ -249,67 +279,19 @@ const App = () => {
       return [];
     }
   };
-  const sendData = async () => {
-    try {
-      const locat = await getCoordinates(); // Ensure coordinates are fetched first
-      console.log("locat", locat);
-      const storedData = localStorage.getItem("userObj");
-      if (storedData) {
-        const userData = JSON.parse(storedData);
-
-        // console.log("send Data1", userData);
-
-        if (userData?.role == "taxi") {
-          const response = await axios.post(
-            baseURL + "/api/taxi/add-taxi", // Updated API endpoint
-            {
-              ...userData, // Use userData to send the required information
-              location: locat,
-              from: userData?.pickupLocation,
-              to: userData?.dropLocation,
-            }
-          );
-          // console.log("Data saved successfully:", response.data);
-        } else {
-          const response = await axios.post(
-            baseURL + "/api/taxi/add-passenger", // Updated API endpoint
-            {
-              ...userData, // Use userData to send the required information
-              location: locat,
-              from: userData?.pickupLocation,
-              to: userData?.dropLocation,
-            }
-          );
-          // console.log("Data saved successfully:", response.data);
-        }
-      }
-    } catch (error) {
-      console.log("No user Data to send");
-      console.error("Error saving data:", error);
-    }
-  };
 
   useEffect(() => {
-    sendData();
-    fetchAllData();
+    // sendData();
+    // fetchAllData();
 
     const interval = setInterval(() => {
-      sendData();
-      fetchAllData();
+      // sendData();
+      console.log("Refreshing...");
+      // fetchAllData();
+      window.location.reload();
     }, 10000);
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
-  // useEffect(() => {
-  //   if (userData) {
-  //     fetchAllData();
-  //   }
-  //   const interval = setInterval(() => {
-  //     if (userData) {
-  //       fetchAllData();
-  //     }
-  //   }, 10000); // Call sendData every 30 seconds
-  //   return () => clearInterval(interval); // Cleanup on unmount
-  // }, []);
 
   return (
     <div>
@@ -365,7 +347,7 @@ const App = () => {
                     marginRight: "3px",
                   }}
                   onClick={() => {
-                    alert("Page manually refreshed");
+                    // alert("Page manually refreshed");
                     window.location.reload();
                     // fetchAllData();
                   }}
