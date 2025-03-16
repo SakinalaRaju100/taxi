@@ -121,14 +121,14 @@ const App = () => {
   };
 
   const mapFunc = async (data) => {
-    const locat = await getCoordinates(); // Ensure coordinates are fetched first
-    console.log("locat", locat);
+    const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
+    console.log("userLocation", userLocation);
 
     const a = document.getElementById("map");
     // console.log("map", a);
     a.style.display = "block"; // Show map
     // Initialize the Leaflet map
-    const map = L.map("map").setView(locat, 14);
+    const map = L.map("map").setView(userLocation, 14);
 
     // Add OpenStreetMap tile layer
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -137,7 +137,7 @@ const App = () => {
     }).addTo(map);
 
     // var marker = L.marker([17.692118, 79.142845])
-    var marker = L.marker(locat).addTo(map).bindPopup(`you`).openPopup();
+    var marker = L.marker(userLocation).addTo(map).bindPopup(`you`).openPopup();
 
     // console.log("allDatea", allData);
 
@@ -164,8 +164,8 @@ const App = () => {
 
   const sendData = async () => {
     try {
-      const locat = await getCoordinates(); // Ensure coordinates are fetched first
-      console.log("locat", locat);
+      const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
+      console.log("userLocation", userLocation);
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         const userData = JSON.parse(storedData);
@@ -177,23 +177,29 @@ const App = () => {
             baseURL + "/api/taxi/add-taxi", // Updated API endpoint
             {
               ...userData, // Use userData to send the required information
-              location: locat,
+              location: userLocation,
               from: userData?.pickupLocation,
               to: userData?.dropLocation,
             }
           );
           // console.log("Data saved successfully:", response.data);
+          await setAllData(response.data.data);
+
+          await mapFunc(response.data.data);
         } else {
           const response = await axios.post(
             baseURL + "/api/taxi/add-passenger", // Updated API endpoint
             {
               ...userData, // Use userData to send the required information
-              location: locat,
+              location: userLocation,
               from: userData?.pickupLocation,
               to: userData?.dropLocation,
             }
           );
           // console.log("Data saved successfully:", response.data);
+          await setAllData(response.data.data);
+
+          await mapFunc(response.data.data);
         }
       }
     } catch (error) {
@@ -204,13 +210,14 @@ const App = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      await getCoordinates();
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         setUserData(JSON.parse(storedData));
         // const a = document.getElementById("map");
         // a.style.display = "block"; // Show map
         await sendData();
-        await fetchAllData();
+        // await fetchAllData();
       } else {
         const a = document.getElementById("map");
         a.style.display = "none"; // Hide map
@@ -282,18 +289,16 @@ const App = () => {
 
   useEffect(() => {
     // sendData();
-    // fetchAllData();
 
     const interval = setInterval(() => {
-      // sendData();
-
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         console.log("Refreshing...");
-        // fetchAllData();
-        window.location.reload();
+
+        sendData();
+        // window.location.reload();
       }
-    }, 30000);
+    }, 20000);
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
@@ -535,6 +540,9 @@ const App = () => {
                     }
                   );
                   // console.log("Data saved successfully:", response.data);
+                  await setAllData(response.data.data);
+
+                  await mapFunc(response.data.data);
                 } catch (error) {
                   console.error("Error saving data:", error);
                 }
@@ -729,7 +737,10 @@ const App = () => {
                       location: currentCoordinates,
                     }
                   );
-                  console.log("Data saved successfully:", response.data);
+                  // console.log("Data saved successfully:", response.data);
+                  await setAllData(response.data.data);
+
+                  await mapFunc(response.data.data);
                 } catch (error) {
                   console.error("Error saving data:", error);
                 }
