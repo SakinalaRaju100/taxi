@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Notistick</title>
+    <style>
+      /* Notification styling */
+      #notification {
+        position: fixed;
+        bottom: 40px;
+        right: 20px;
+        background: gray;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="showNotification()">Show Notification</button>
+    <div id="notification">This is a notification!</div>
+
+    <script>
+      function showNotification() {
+        var notification = document.getElementById("notification");
+        notification.style.display = "block";
+
+        setTimeout(function () {
+          notification.style.display = "none";
+        }, 3000); // Hide after 3 seconds
+      }
+    </script>
+  </body>
+</html>

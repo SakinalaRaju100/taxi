@@ -279,6 +279,55 @@ const App = () => {
     }
   };
 
+  // const getCoordinates = async () => {
+  //   if (!navigator.geolocation) {
+  //     console.error("Geolocation is not supported by this browser.");
+  //     alert("Geolocation is not supported by your browser.");
+  //     return [];
+  //   }
+
+  //   try {
+  //     // Check the current permission status
+  //     const permissionStatus = await navigator.permissions.query({
+  //       name: "geolocation",
+  //     });
+
+  //     if (permissionStatus.state === "denied") {
+  //       alert(
+  //         "Location access is denied. Please enable location access in your browser settings."
+  //       );
+  //     }
+
+  //     if (permissionStatus.state === "prompt") {
+  //       // alert(
+  //       //   "This feature requires location access. Please allow it when prompted."
+  //       // );
+  //     }
+  //     // navigator.geolocation.getCurrentPosition();
+
+  //     return new Promise((resolve, reject) => {
+  //       navigator.geolocation.getCurrentPosition(
+  //         async (position) => {
+  //           const { latitude, longitude } = position.coords;
+  //           // console.log("Current Coordinates:", latitude, longitude);
+  //           setCurrentCoordinates([latitude, longitude]);
+  //           resolve([latitude, longitude]);
+  //         },
+  //         (error) => {
+  //           console.error("Error getting location:", error);
+  //           if (error.code === error.PERMISSION_DENIED) {
+  //             alert("Please allow location access to use this feature.");
+  //           }
+  //           reject([]);
+  //         }
+  //       );
+  //     });
+  //   } catch (error) {
+  //     console.error("Error checking location permission:", error);
+  //     return [];
+  //   }
+  // };
+
   const getCoordinates = async () => {
     if (!navigator.geolocation) {
       console.error("Geolocation is not supported by this browser.");
@@ -287,7 +336,6 @@ const App = () => {
     }
 
     try {
-      // Check the current permission status
       const permissionStatus = await navigator.permissions.query({
         name: "geolocation",
       });
@@ -298,18 +346,25 @@ const App = () => {
         );
       }
 
-      if (permissionStatus.state === "prompt") {
-        // alert(
-        //   "This feature requires location access. Please allow it when prompted."
-        // );
-      }
-      // navigator.geolocation.getCurrentPosition();
+      // Define positioning options for higher accuracy
+      const positionOptions = {
+        enableHighAccuracy: true, // Request high accuracy GPS data
+        maximumAge: 0, // Don't use cached position data
+        timeout: 10000, // Time to wait for position data (10 seconds)
+      };
 
       return new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
-            const { latitude, longitude } = position.coords;
-            // console.log("Current Coordinates:", latitude, longitude);
+            const { latitude, longitude, accuracy } = position.coords;
+            console.log("Location accuracy:", accuracy, "meters");
+
+            // Only accept positions with good accuracy (optional)
+            if (accuracy > 100) {
+              // 100 meters threshold, adjust as needed
+              console.warn("Low accuracy location data:", accuracy, "meters");
+            }
+
             setCurrentCoordinates([latitude, longitude]);
             resolve([latitude, longitude]);
           },
@@ -319,7 +374,8 @@ const App = () => {
               alert("Please allow location access to use this feature.");
             }
             reject([]);
-          }
+          },
+          positionOptions // Add the positioning options
         );
       });
     } catch (error) {
