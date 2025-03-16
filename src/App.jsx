@@ -162,9 +162,9 @@ const App = () => {
   //   });
   // };
 
-  const mapFunc = async (data) => {
-    const userLocation = await getCoordinates();
-    console.log("userLocation", userLocation);
+  const mapFunc = async (data, userLocation) => {
+    // const userLocation = await getCoordinates();
+    // console.log("userLocation", userLocation);
 
     const mapElement = document.getElementById("map");
 
@@ -226,7 +226,7 @@ const App = () => {
           // console.log("Data saved successfully:", response.data);
           await setAllData(response.data.data);
 
-          await mapFunc(response.data.data);
+          await mapFunc(response.data.data, userLocation);
         } else {
           const response = await axios.post(
             baseURL + "/api/taxi/add-passenger", // Updated API endpoint
@@ -240,7 +240,7 @@ const App = () => {
           // console.log("Data saved successfully:", response.data);
           await setAllData(response.data.data);
 
-          await mapFunc(response.data.data);
+          await mapFunc(response.data.data, userLocation);
         }
       }
     } catch (error) {
@@ -250,8 +250,9 @@ const App = () => {
   };
 
   useEffect(() => {
+    console.log("first useEffect");
+    getCoordinates2();
     const fetchData = async () => {
-      await getCoordinates();
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         setUserData(JSON.parse(storedData));
@@ -328,11 +329,10 @@ const App = () => {
   //   }
   // };
 
-  const getCoordinates = async () => {
+  const getCoordinates2 = async () => {
     if (!navigator.geolocation) {
       console.error("Geolocation is not supported by this browser.");
       alert("Geolocation is not supported by your browser.");
-      return [];
     }
 
     try {
@@ -345,6 +345,62 @@ const App = () => {
           "Location access is denied. Please enable location access in your browser settings."
         );
       }
+
+      // Define positioning options for higher accuracy
+      const positionOptions = {
+        enableHighAccuracy: true, // Request high accuracy GPS data
+        maximumAge: 0, // Don't use cached position data
+        timeout: 10000, // Time to wait for position data (10 seconds)
+      };
+
+      // return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude, accuracy } = position.coords;
+          console.log("Location accuracy:", accuracy, "meters");
+
+          // Only accept positions with good accuracy (optional)
+          if (accuracy > 500) {
+            // 100 meters threshold, adjust as needed
+            console.warn("Low accuracy location data:", accuracy, "meters");
+            alert("Low accuracy location data:", accuracy, "meters");
+          }
+
+          setCurrentCoordinates([latitude, longitude]);
+          // resolve([latitude, longitude]);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          if (error.code === error.PERMISSION_DENIED) {
+            alert("Please allow location access to use this feature.");
+          }
+          // reject([]);
+        },
+        positionOptions // Add the positioning options
+      );
+      // });
+    } catch (error) {
+      console.error("Error checking location permission:", error);
+      // return [];
+    }
+  };
+  const getCoordinates = async () => {
+    // if (!navigator.geolocation) {
+    //   console.error("Geolocation is not supported by this browser.");
+    //   alert("Geolocation is not supported by your browser.");
+    //   return [];
+    // }
+
+    try {
+      // const permissionStatus = await navigator.permissions.query({
+      //   name: "geolocation",
+      // });
+
+      // if (permissionStatus.state === "denied") {
+      //   alert(
+      //     "Location access is denied. Please enable location access in your browser settings."
+      //   );
+      // }
 
       // Define positioning options for higher accuracy
       const positionOptions = {
@@ -639,7 +695,7 @@ const App = () => {
                   // console.log("Data saved successfully:", response.data);
                   await setAllData(response.data.data);
 
-                  await mapFunc(response.data.data);
+                  await mapFunc(response.data.data, currentCoordinates);
                 } catch (error) {
                   console.error("Error saving data:", error);
                 }
@@ -837,7 +893,7 @@ const App = () => {
                   // console.log("Data saved successfully:", response.data);
                   await setAllData(response.data.data);
 
-                  await mapFunc(response.data.data);
+                  await mapFunc(response.data.data, currentCoordinates);
                 } catch (error) {
                   console.error("Error saving data:", error);
                 }
