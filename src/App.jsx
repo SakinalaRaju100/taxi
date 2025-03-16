@@ -120,15 +120,65 @@ const App = () => {
     }
   };
 
+  // const mapFunc = async (data) => {
+  //   const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
+  //   console.log("userLocation", userLocation);
+
+  //   const a = document.getElementById("map");
+  //   // console.log("map", a);
+  //   a.style.display = "block"; // Show map
+  //   // Initialize the Leaflet map
+  //   const map = L.map("map").setView(userLocation, 14);
+
+  //   // Add OpenStreetMap tile layer
+  //   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  //     maxZoom: 17,
+  //     attribution: "© OpenStreetMap",
+  //   }).addTo(map);
+
+  //   // var marker = L.marker([17.692118, 79.142845])
+  //   var marker = L.marker(userLocation).addTo(map).bindPopup(`you`).openPopup();
+
+  //   // console.log("allDatea", allData);
+
+  //   // Add all markers from the allData array
+
+  //   data.forEach((marker) => {
+  //     L.marker(marker.location, {
+  //       icon: L.icon({
+  //         // iconUrl: "./taxi.png",
+  //         iconUrl: marker.role == "taxi" ? "./taxi.png" : "./human.png",
+  //         // iconUrl: "/redCarTopViewIcon.png",
+  //         iconSize: [55, 55],
+  //       }),
+  //       maxZoom: 5, // Added maxZoom property to markers
+  //     })
+  //       .addTo(map)
+  //       .bindPopup(
+  //         // `${marker.name} - ${marker.mobile},  seats: ${marker.seats}`
+  //         `${marker.name} - ${marker.mobile} - ${marker.role}`
+  //       );
+  //     // .openPopup();
+  //   });
+  // };
+
   const mapFunc = async (data) => {
-    const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
+    const userLocation = await getCoordinates();
     console.log("userLocation", userLocation);
 
-    const a = document.getElementById("map");
-    // console.log("map", a);
-    a.style.display = "block"; // Show map
-    // Initialize the Leaflet map
+    const mapElement = document.getElementById("map");
+
+    // Remove existing map instance if it exists
+    if (window.mapInstance) {
+      window.mapInstance.remove();
+    }
+
+    // Show map
+    mapElement.style.display = "block";
+
+    // Create new map instance
     const map = L.map("map").setView(userLocation, 14);
+    window.mapInstance = map; // Store map instance for future cleanup
 
     // Add OpenStreetMap tile layer
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -136,29 +186,20 @@ const App = () => {
       attribution: "© OpenStreetMap",
     }).addTo(map);
 
-    // var marker = L.marker([17.692118, 79.142845])
-    var marker = L.marker(userLocation).addTo(map).bindPopup(`you`).openPopup();
+    // Add user marker
+    L.marker(userLocation).addTo(map).bindPopup(`you`).openPopup();
 
-    // console.log("allDatea", allData);
-
-    // Add all markers from the allData array
-
+    // Add all other markers
     data.forEach((marker) => {
       L.marker(marker.location, {
         icon: L.icon({
-          // iconUrl: "./taxi.png",
           iconUrl: marker.role == "taxi" ? "./taxi.png" : "./human.png",
-          // iconUrl: "/redCarTopViewIcon.png",
           iconSize: [55, 55],
         }),
-        maxZoom: 5, // Added maxZoom property to markers
+        maxZoom: 5,
       })
         .addTo(map)
-        .bindPopup(
-          // `${marker.name} - ${marker.mobile},  seats: ${marker.seats}`
-          `${marker.name} - ${marker.mobile} - ${marker.role}`
-        );
-      // .openPopup();
+        .bindPopup(`${marker.name} - ${marker.mobile} - ${marker.role}`);
     });
   };
 
@@ -298,7 +339,7 @@ const App = () => {
         sendData();
         // window.location.reload();
       }
-    }, 20000);
+    }, 10000);
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
