@@ -451,7 +451,7 @@ const App = () => {
         sendData();
         // window.location.reload();
       }
-    }, 10000);
+    }, 20000);
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
