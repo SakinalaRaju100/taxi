@@ -918,7 +918,7 @@ const App = () => {
         <div>
           <Accordion key={1}>
             <AccordionSummary>
-              <Typography>All Data List ( {allData.length})</Typography>
+              <Typography>All Data Lists ( {allData.length})</Typography>
             </AccordionSummary>
             <AccordionDetails>
               {allData.map((vehicle, index) => (
