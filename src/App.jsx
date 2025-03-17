@@ -502,7 +502,7 @@ const App = () => {
                     window.location.reload();
                     // fetchAllData();
                   }}
-                  aria-label="close"
+                  // aria-label="close"
                 >
                   <span className="material-icons">refresh</span>
                 </IconButton>
@@ -533,7 +533,7 @@ const App = () => {
                     } else {
                     }
                   }}
-                  aria-label="close"
+                  // aria-label="close"
                 >
                   <span className="material-icons">close</span>
                 </IconButton>
