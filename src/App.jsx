@@ -163,9 +163,6 @@ const App = () => {
   // };
 
   const mapFunc = async (data, userLocation) => {
-    // const userLocation = await getCoordinates();
-    // console.log("userLocation", userLocation);
-
     const mapElement = document.getElementById("map");
 
     // Remove existing map instance if it exists
@@ -177,7 +174,7 @@ const App = () => {
     mapElement.style.display = "block";
 
     // Create new map instance
-    const map = L.map("map").setView(userLocation, 14);
+    const map = L.map("map").setView(userLocation, 15);
     window.mapInstance = map; // Store map instance for future cleanup
 
     // Add OpenStreetMap tile layer
@@ -353,13 +350,11 @@ const App = () => {
         timeout: 10000, // Time to wait for position data (10 seconds)
       };
 
-      // return new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude, accuracy } = position.coords;
           console.log("Location accuracy:", accuracy, "meters");
 
-          // Only accept positions with good accuracy (optional)
           if (accuracy > 500) {
             // 100 meters threshold, adjust as needed
             console.warn("Low accuracy location data:", accuracy, "meters");
@@ -367,41 +362,21 @@ const App = () => {
           }
 
           setCurrentCoordinates([latitude, longitude]);
-          // resolve([latitude, longitude]);
         },
         (error) => {
           console.error("Error getting location:", error);
           if (error.code === error.PERMISSION_DENIED) {
             alert("Please allow location access to use this feature.");
           }
-          // reject([]);
         },
         positionOptions // Add the positioning options
       );
-      // });
     } catch (error) {
       console.error("Error checking location permission:", error);
-      // return [];
     }
   };
   const getCoordinates = async () => {
-    // if (!navigator.geolocation) {
-    //   console.error("Geolocation is not supported by this browser.");
-    //   alert("Geolocation is not supported by your browser.");
-    //   return [];
-    // }
-
     try {
-      // const permissionStatus = await navigator.permissions.query({
-      //   name: "geolocation",
-      // });
-
-      // if (permissionStatus.state === "denied") {
-      //   alert(
-      //     "Location access is denied. Please enable location access in your browser settings."
-      //   );
-      // }
-
       // Define positioning options for higher accuracy
       const positionOptions = {
         enableHighAccuracy: true, // Request high accuracy GPS data
@@ -606,7 +581,7 @@ const App = () => {
                 labelId="pickup-label"
                 value={pickupLocation}
                 onChange={(e) => {
-                  getCoordinates();
+                  getCoordinates2();
                   setPickupLocation(e.target.value);
                 }}
               >
@@ -670,16 +645,7 @@ const App = () => {
                 pickupLocation &&
                 dropLocation
               ) {
-                getCoordinates();
-
-                // console.log(
-                //   "name, mobile",
-                //   name,
-                //   mobile,
-                //   pickupLocation,
-                //   dropLocation,
-                //   currentCoordinates
-                // );
+                getCoordinates2();
 
                 try {
                   const response = await axios.post(
@@ -812,7 +778,7 @@ const App = () => {
                 labelId="pickup-label"
                 value={pickupLocation}
                 onChange={(e) => {
-                  getCoordinates();
+                  getCoordinates2();
                   setPickupLocation(e.target.value);
                 }}
               >
@@ -877,7 +843,7 @@ const App = () => {
                 pickupLocation &&
                 dropLocation
               ) {
-                getCoordinates();
+                getCoordinates2();
 
                 try {
                   const response = await axios.post(
