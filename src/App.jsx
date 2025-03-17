@@ -268,7 +268,7 @@ const App = () => {
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         setUserData(JSON.parse(storedData));
-        await sendDataInitial();
+        sendDataInitial();
         // const a = document.getElementById("map");
         // a.style.display = "block"; // Show map
         await sendData();
