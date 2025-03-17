@@ -248,7 +248,7 @@ const App = () => {
 
   useEffect(() => {
     console.log("first useEffect");
-    getCoordinates2();
+    getCoordinatesPermissions();
     const fetchData = async () => {
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
@@ -326,6 +326,20 @@ const App = () => {
   //   }
   // };
 
+  const getCoordinatesPermissions = async () => {
+    if (!navigator.geolocation) {
+      console.error("Geolocation is not supported by this browser.");
+      alert("Geolocation is not supported by your browser.");
+    }
+
+    try {
+      const permissionStatus = await navigator.permissions.query({
+        name: "geolocation",
+      });
+    } catch (error) {
+      console.error("Error checking location permission:", error);
+    }
+  };
   const getCoordinates2 = async () => {
     if (!navigator.geolocation) {
       console.error("Geolocation is not supported by this browser.");
