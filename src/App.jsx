@@ -200,6 +200,21 @@ const App = () => {
     });
   };
 
+  const sendDataInitial = async () => {
+    try {
+      const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
+      console.log("userLocation", userLocation);
+      const storedData = localStorage.getItem("userObj");
+      if (storedData) {
+        const userData = JSON.parse(storedData);
+
+        await mapFunc([], userLocation);
+      }
+    } catch (error) {
+      console.log("No user Data to send");
+      console.error("Error saving data:", error);
+    }
+  };
   const sendData = async () => {
     try {
       const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
@@ -253,6 +268,7 @@ const App = () => {
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         setUserData(JSON.parse(storedData));
+        await sendDataInitial();
         // const a = document.getElementById("map");
         // a.style.display = "block"; // Show map
         await sendData();
