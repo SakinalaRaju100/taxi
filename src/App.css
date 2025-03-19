@@ -102,3 +102,18 @@ h2 {
     transform: rotate(360deg);
   }
 }
+
+#notification {
+  /*  bottom: 40px;
+  right: 20px; */
+  position: relative;
+  top: 40px;
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust for the element's width */
+  background: rgb(81, 213, 243);
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  border-radius: 5px;
+  display: none;
+}

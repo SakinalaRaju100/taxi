@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import "./App.css";
 import {
   AppBar,
   AccordionDetails,
@@ -184,7 +184,28 @@ const App = () => {
     }).addTo(map);
 
     // Add user marker
-    L.marker(userLocation).addTo(map).bindPopup(`you`).openPopup();
+    L.marker(userLocation)
+      .addTo(map)
+      // .bindPopup(`<button onclick="console.log('clicked')">jdj</button>`)
+      .bindPopup(`You`)
+      .openPopup();
+
+    L.circle(userLocation, {
+      color: "blue",
+      fillColor: "blue",
+      fillOpacity: 0.3,
+      radius: 400, // 300 meters
+    }).addTo(map);
+
+    L.circle(userLocation, {
+      color: "orange",
+      fillColor: "green",
+      fillOpacity: 0.9,
+      radius: 40, // 300 meters
+    })
+      .addTo(map)
+      .bindPopup(`You`)
+      .openPopup();
 
     // Add all other markers
     data.forEach((marker) => {
@@ -267,8 +288,10 @@ const App = () => {
     const fetchData = async () => {
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
+        showNotification();
         setUserData(JSON.parse(storedData));
         sendDataInitial();
+
         // const a = document.getElementById("map");
         // a.style.display = "block"; // Show map
         await sendData();
@@ -445,14 +468,26 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    // sendData();
+  function showNotification() {
+    var notification = document.getElementById("notification");
+    // Check if the notification element is found
+    if (notification) {
+      notification.style.display = "block"; // Show the notification
+    } else {
+      console.error("Notification element not found");
+    }
 
+    setTimeout(function () {
+      notification.style.display = "none"; // Hide after 3 seconds
+    }, 3000); // Hide after 3 seconds
+  }
+
+  useEffect(() => {
     const interval = setInterval(() => {
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         console.log("Refreshing...");
-
+        showNotification();
         sendData();
         // window.location.reload();
       }
@@ -462,6 +497,7 @@ const App = () => {
 
   return (
     <div>
+      {/* <div id="notification">Refreshing...</div> */}
       {console.log("userData", userData)}
 
       {!userData && (
