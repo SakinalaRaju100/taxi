@@ -46,6 +46,8 @@ import axios from "axios";
 
 const App = () => {
   const baseURL = "https://www.todaydigitalworld.com";
+  const [radius, setRadius] = useState(0.5); // Add state for radius
+
   const [allData, setAllData] = useState([
     // {
     //   _id: "67d4456b7fa081016611afdb",
@@ -163,7 +165,8 @@ const App = () => {
   //   });
   // };
 
-  const mapFunc = async (data, userLocation) => {
+  const mapFunc = async (data, userLocation, radi = 1) => {
+    console.log("mapData", data, userLocation, radi);
     const mapElement = document.getElementById("map");
 
     // Remove existing map instance if it exists
@@ -175,7 +178,7 @@ const App = () => {
     mapElement.style.display = "block";
 
     // Create new map instance
-    const map = L.map("map").setView(userLocation, 15);
+    const map = L.map("map").setView(userLocation, 15.5 - radius);
     window.mapInstance = map; // Store map instance for future cleanup
 
     // Add OpenStreetMap tile layer
@@ -195,7 +198,7 @@ const App = () => {
       color: "#00a6ff",
       fillColor: "#00fffb",
       fillOpacity: 0.3,
-      radius: 400, // 300 meters
+      radius: radi * 1000, // 300 meters
     }).addTo(map);
 
     L.circle(userLocation, {
@@ -237,7 +240,7 @@ const App = () => {
       console.error("Error saving data:", error);
     }
   };
-  const sendData = async () => {
+  const sendData = async (rad = 1) => {
     try {
       const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
       console.log("userLocation", userLocation);
@@ -260,7 +263,7 @@ const App = () => {
           // console.log("Data saved successfully:", response.data);
           await setAllData(response.data.data);
 
-          await mapFunc(response.data.data, userLocation);
+          await mapFunc(response.data.data, userLocation, rad);
         } else {
           const response = await axios.post(
             baseURL + "/api/taxi/add-passenger", // Updated API endpoint
@@ -274,7 +277,7 @@ const App = () => {
           // console.log("Data saved successfully:", response.data);
           await setAllData(response.data.data);
 
-          await mapFunc(response.data.data, userLocation);
+          await mapFunc(response.data.data, userLocation, rad);
         }
       }
     } catch (error) {
@@ -489,7 +492,7 @@ const App = () => {
       if (storedData) {
         console.log("Refreshing...");
         // showNotification();
-        sendData();
+        sendData(radius);
         // window.location.reload();
       }
     }, 20000);
@@ -989,24 +992,30 @@ const App = () => {
             </Typography>{" "}
             <Slider
               sx={{ p: 1, m: 2 }}
-              aria-label="home"
-              defaultValue={30}
-              getAriaValueText={(value) => `${value}kn`}
+              // aria-label="home"
+              defaultValue={0.5}
+              // getAriaValueText={value}
+              onChange={(e, newValue) => {
+                console.log("newValue", newValue);
+                setRadius(newValue);
+                sendData(newValue);
+                // mapFunc(data, userLocation, radius);
+              }}
               valueLabelDisplay="auto"
               // shiftStep={30}
               // step={5}
               marks={[
                 {
-                  value: 1,
-                  label: "1 KM",
+                  value: 0.5,
+                  label: "0.5 KM",
                 },
                 {
-                  value: 100,
-                  label: "100 KM",
+                  value: 15,
+                  label: "15 KM",
                 },
               ]}
-              min={1}
-              max={100}
+              min={0.5}
+              max={15}
             />
           </Box>
         </div>
