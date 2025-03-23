@@ -39,6 +39,7 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Slider,
   FormHelperText,
 } from "@mui/material";
 import axios from "axios";
@@ -184,28 +185,28 @@ const App = () => {
     }).addTo(map);
 
     // Add user marker
-    L.marker(userLocation)
-      .addTo(map)
-      // .bindPopup(`<button onclick="console.log('clicked')">jdj</button>`)
-      .bindPopup(`You`)
-      .openPopup();
+    // L.marker(userLocation)
+    //   .addTo(map)
+    //   // .bindPopup(`<button onclick="console.log('clicked')">jdj</button>`)
+    //   .bindPopup(`You`)
+    //   .openPopup();
 
     L.circle(userLocation, {
-      color: "blue",
-      fillColor: "blue",
+      color: "#00a6ff",
+      fillColor: "#00fffb",
       fillOpacity: 0.3,
       radius: 400, // 300 meters
     }).addTo(map);
 
     L.circle(userLocation, {
-      color: "orange",
+      color: "#6aff00",
       fillColor: "green",
       fillOpacity: 0.9,
       radius: 40, // 300 meters
     })
       .addTo(map)
-      .bindPopup(`You`)
-      .openPopup();
+      .bindPopup(`You`);
+    // .openPopup();
 
     // Add all other markers
     data.forEach((marker) => {
@@ -288,7 +289,7 @@ const App = () => {
     const fetchData = async () => {
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
-        showNotification();
+        // showNotification();
         setUserData(JSON.parse(storedData));
         sendDataInitial();
 
@@ -468,26 +469,26 @@ const App = () => {
     }
   };
 
-  function showNotification() {
-    var notification = document.getElementById("notification");
-    // Check if the notification element is found
-    if (notification) {
-      notification.style.display = "block"; // Show the notification
-    } else {
-      console.error("Notification element not found");
-    }
+  // function showNotification() {
+  //   var notification = document.getElementById("notification");
+  //   // Check if the notification element is found
+  //   if (notification) {
+  //     notification.style.display = "block"; // Show the notification
+  //   } else {
+  //     console.error("Notification element not found");
+  //   }
 
-    setTimeout(function () {
-      notification.style.display = "none"; // Hide after 3 seconds
-    }, 3000); // Hide after 3 seconds
-  }
+  //   setTimeout(function () {
+  //     notification.style.display = "none"; // Hide after 3 seconds
+  //   }, 3000); // Hide after 3 seconds
+  // }
 
   useEffect(() => {
     const interval = setInterval(() => {
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         console.log("Refreshing...");
-        showNotification();
+        // showNotification();
         sendData();
         // window.location.reload();
       }
@@ -590,13 +591,15 @@ const App = () => {
                   <span className="material-icons">close</span>
                 </IconButton>
               </div>
-              {/*<Typography variant="h6" style={{ color: "blue" }}>
-                Name: {userData.name} - {userData.mobile}
+              <Typography
+                variant="body"
+                style={{ color: "blue", display: "block" }}
+              >
+                {userData.role} - {userData.name} - {userData.mobile}
               </Typography>
-              <Typography variant="h6" style={{ color: "green" }}>
-                from : {userData.pickupLocation} to:{" "}
-                {userData.dropLocation}{" "}
-              </Typography>*/}
+              <Typography variant="body" style={{ color: "green" }}>
+                from : {userData.pickupLocation} to: {userData.dropLocation}{" "}
+              </Typography>
             </CardContent>
           </Card>
         </div>
@@ -980,6 +983,32 @@ const App = () => {
               ))}
             </AccordionDetails>
           </Accordion>
+          <Box display="flex" alignItems="center">
+            <Typography sx={{ p: 1 }} variant="h6">
+              Radius
+            </Typography>{" "}
+            <Slider
+              sx={{ p: 1, m: 2 }}
+              aria-label="home"
+              defaultValue={30}
+              getAriaValueText={(value) => `${value}kn`}
+              valueLabelDisplay="auto"
+              // shiftStep={30}
+              // step={5}
+              marks={[
+                {
+                  value: 1,
+                  label: "1 KM",
+                },
+                {
+                  value: 100,
+                  label: "100 KM",
+                },
+              ]}
+              min={1}
+              max={100}
+            />
+          </Box>
         </div>
       )}
     </div>
