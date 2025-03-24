@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import {
   AppBar,
@@ -46,8 +46,8 @@ import axios from "axios";
 
 const App = () => {
   const baseURL = "https://www.todaydigitalworld.com";
-  const [radius, setRadius] = useState(0.5); // Add state for radius
-
+  // const [radius, setRadius] = useState(0.5); // Add state for radius
+  const radius = useRef(0.5);
   const [allData, setAllData] = useState([
     // {
     //   _id: "67d4456b7fa081016611afdb",
@@ -103,69 +103,7 @@ const App = () => {
   ]);
   const [userData, setUserData] = useState(null);
 
-  const fetchAllData = async () => {
-    const storedData = localStorage.getItem("userObj");
-    if (storedData) {
-      const userData = JSON.parse(storedData);
-      try {
-        const response = await axios.post(baseURL + "/api/taxi/get-all", {
-          mobile: userData?.mobile,
-          role: userData?.role,
-        });
-        // console.log("Data saved successfully:", response.data);
-        await setAllData(response.data.data);
-
-        mapFunc(response.data.data);
-      } catch (error) {
-        setAllData([]);
-        console.error("Error saving data:", error);
-      }
-    }
-  };
-
-  // const mapFunc = async (data) => {
-  //   const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
-  //   console.log("userLocation", userLocation);
-
-  //   const a = document.getElementById("map");
-  //   // console.log("map", a);
-  //   a.style.display = "block"; // Show map
-  //   // Initialize the Leaflet map
-  //   const map = L.map("map").setView(userLocation, 14);
-
-  //   // Add OpenStreetMap tile layer
-  //   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  //     maxZoom: 17,
-  //     attribution: "© OpenStreetMap",
-  //   }).addTo(map);
-
-  //   // var marker = L.marker([17.692118, 79.142845])
-  //   var marker = L.marker(userLocation).addTo(map).bindPopup(`you`).openPopup();
-
-  //   // console.log("allDatea", allData);
-
-  //   // Add all markers from the allData array
-
-  //   data.forEach((marker) => {
-  //     L.marker(marker.location, {
-  //       icon: L.icon({
-  //         // iconUrl: "./taxi.png",
-  //         iconUrl: marker.role == "taxi" ? "./taxi.png" : "./human.png",
-  //         // iconUrl: "/redCarTopViewIcon.png",
-  //         iconSize: [55, 55],
-  //       }),
-  //       maxZoom: 5, // Added maxZoom property to markers
-  //     })
-  //       .addTo(map)
-  //       .bindPopup(
-  //         // `${marker.name} - ${marker.mobile},  seats: ${marker.seats}`
-  //         `${marker.name} - ${marker.mobile} - ${marker.role}`
-  //       );
-  //     // .openPopup();
-  //   });
-  // };
-
-  const mapFunc = async (data, userLocation, radi = 1) => {
+  const mapFunc = async (data, userLocation, radi = 0.5) => {
     console.log("mapData", data, userLocation, radi);
     const mapElement = document.getElementById("map");
 
@@ -178,7 +116,7 @@ const App = () => {
     mapElement.style.display = "block";
 
     // Create new map instance
-    const map = L.map("map").setView(userLocation, 15.5 - radius);
+    const map = L.map("map").setView(userLocation, 14 - radi / 2.5);
     window.mapInstance = map; // Store map instance for future cleanup
 
     // Add OpenStreetMap tile layer
@@ -186,13 +124,6 @@ const App = () => {
       maxZoom: 17,
       attribution: "© OpenStreetMap",
     }).addTo(map);
-
-    // Add user marker
-    // L.marker(userLocation)
-    //   .addTo(map)
-    //   // .bindPopup(`<button onclick="console.log('clicked')">jdj</button>`)
-    //   .bindPopup(`You`)
-    //   .openPopup();
 
     L.circle(userLocation, {
       color: "#00a6ff",
@@ -233,14 +164,14 @@ const App = () => {
       if (storedData) {
         const userData = JSON.parse(storedData);
 
-        await mapFunc([], userLocation);
+        await mapFunc([], userLocation, radius.current);
       }
     } catch (error) {
       console.log("No user Data to send");
       console.error("Error saving data:", error);
     }
   };
-  const sendData = async (rad = 1) => {
+  const sendData = async (rad = 0.5) => {
     try {
       const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
       console.log("userLocation", userLocation);
@@ -319,55 +250,6 @@ const App = () => {
       a.style.display = "none";
     }
   };
-
-  // const getCoordinates = async () => {
-  //   if (!navigator.geolocation) {
-  //     console.error("Geolocation is not supported by this browser.");
-  //     alert("Geolocation is not supported by your browser.");
-  //     return [];
-  //   }
-
-  //   try {
-  //     // Check the current permission status
-  //     const permissionStatus = await navigator.permissions.query({
-  //       name: "geolocation",
-  //     });
-
-  //     if (permissionStatus.state === "denied") {
-  //       alert(
-  //         "Location access is denied. Please enable location access in your browser settings."
-  //       );
-  //     }
-
-  //     if (permissionStatus.state === "prompt") {
-  //       // alert(
-  //       //   "This feature requires location access. Please allow it when prompted."
-  //       // );
-  //     }
-  //     // navigator.geolocation.getCurrentPosition();
-
-  //     return new Promise((resolve, reject) => {
-  //       navigator.geolocation.getCurrentPosition(
-  //         async (position) => {
-  //           const { latitude, longitude } = position.coords;
-  //           // console.log("Current Coordinates:", latitude, longitude);
-  //           setCurrentCoordinates([latitude, longitude]);
-  //           resolve([latitude, longitude]);
-  //         },
-  //         (error) => {
-  //           console.error("Error getting location:", error);
-  //           if (error.code === error.PERMISSION_DENIED) {
-  //             alert("Please allow location access to use this feature.");
-  //           }
-  //           reject([]);
-  //         }
-  //       );
-  //     });
-  //   } catch (error) {
-  //     console.error("Error checking location permission:", error);
-  //     return [];
-  //   }
-  // };
 
   const getCoordinatesPermissions = async () => {
     if (!navigator.geolocation) {
@@ -472,27 +354,13 @@ const App = () => {
     }
   };
 
-  // function showNotification() {
-  //   var notification = document.getElementById("notification");
-  //   // Check if the notification element is found
-  //   if (notification) {
-  //     notification.style.display = "block"; // Show the notification
-  //   } else {
-  //     console.error("Notification element not found");
-  //   }
-
-  //   setTimeout(function () {
-  //     notification.style.display = "none"; // Hide after 3 seconds
-  //   }, 3000); // Hide after 3 seconds
-  // }
-
   useEffect(() => {
     const interval = setInterval(() => {
       const storedData = localStorage.getItem("userObj");
       if (storedData) {
         console.log("Refreshing...");
         // showNotification();
-        sendData(radius);
+        sendData(radius.current);
         // window.location.reload();
       }
     }, 20000);
@@ -997,7 +865,8 @@ const App = () => {
               // getAriaValueText={value}
               onChange={(e, newValue) => {
                 console.log("newValue", newValue);
-                setRadius(newValue);
+                // setRadius(newValue);
+                radius.current = newValue;
                 sendData(newValue);
                 // mapFunc(data, userLocation, radius);
               }}
@@ -1010,12 +879,12 @@ const App = () => {
                   label: "0.5 KM",
                 },
                 {
-                  value: 15,
-                  label: "15 KM",
+                  value: 10,
+                  label: "10 KM",
                 },
               ]}
               min={0.5}
-              max={15}
+              max={10}
             />
           </Box>
         </div>
