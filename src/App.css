@@ -117,3 +117,14 @@ h2 {
   border-radius: 5px;
   display: none;
 }
+
+.app-background {
+  background-color: #f0f8ff; /* Change this to your desired color */
+  height: 100vh; /* Full height */
+  width: 100vw; /* Full width */
+  position: fixed; /* Ensure it covers the entire viewport */
+  top: 0;
+  left: 0;
+  z-index: 9998; /* Send it to the back */
+  opacity: 0.8;
+}

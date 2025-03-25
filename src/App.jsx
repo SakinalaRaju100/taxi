@@ -102,8 +102,10 @@ const App = () => {
     { name: "Uppal", distance: 130 },
   ]);
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const mapFunc = async (data, userLocation, radi = 0.5) => {
+    setLoading(true);
     console.log("mapData", data, userLocation, radi);
     const mapElement = document.getElementById("map");
 
@@ -154,6 +156,8 @@ const App = () => {
         .addTo(map)
         .bindPopup(`${marker.name} - ${marker.mobile} - ${marker.role}`);
     });
+
+    setLoading(false);
   };
 
   const sendDataInitial = async () => {
@@ -172,6 +176,7 @@ const App = () => {
     }
   };
   const sendData = async (rad = 0.5) => {
+    setLoading(true); // Show loader
     try {
       const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
       console.log("userLocation", userLocation);
@@ -212,6 +217,7 @@ const App = () => {
         }
       }
     } catch (error) {
+      setLoading(false);
       console.log("No user Data to send");
       console.error("Error saving data:", error);
     }
@@ -369,6 +375,23 @@ const App = () => {
 
   return (
     <div>
+      {/* Loader component */}
+      {loading && (
+        <div className="app-background">
+          <div
+            className="loader"
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 9999,
+              margin: "auto",
+            }}
+          ></div>
+        </div>
+      )}
+
       {/* <div id="notification">Refreshing...</div> */}
       {console.log("userData", userData)}
 
@@ -865,10 +888,8 @@ const App = () => {
               // getAriaValueText={value}
               onChange={(e, newValue) => {
                 console.log("newValue", newValue);
-                // setRadius(newValue);
                 radius.current = newValue;
                 sendData(newValue);
-                // mapFunc(data, userLocation, radius);
               }}
               valueLabelDisplay="auto"
               // shiftStep={30}
