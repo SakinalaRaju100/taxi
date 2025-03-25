@@ -105,7 +105,7 @@ const App = () => {
   const [loading, setLoading] = useState(false);
 
   const mapFunc = async (data, userLocation, radi = 0.5) => {
-    setLoading(true);
+    // setLoading(true);
     console.log("mapData", data, userLocation, radi);
     const mapElement = document.getElementById("map");
 
@@ -157,7 +157,7 @@ const App = () => {
         .bindPopup(`${marker.name} - ${marker.mobile} - ${marker.role}`);
     });
 
-    setLoading(false);
+    // setLoading(false);
   };
 
   const sendDataInitial = async () => {
@@ -176,7 +176,6 @@ const App = () => {
     }
   };
   const sendData = async (rad = 0.5) => {
-    setLoading(true); // Show loader
     try {
       const userLocation = await getCoordinates(); // Ensure coordinates are fetched first
       console.log("userLocation", userLocation);
@@ -185,7 +184,7 @@ const App = () => {
         const userData = JSON.parse(storedData);
 
         // console.log("send Data1", userData);
-
+        setLoading(true); // Show loader
         if (userData?.role == "taxi") {
           const response = await axios.post(
             baseURL + "/api/taxi/add-taxi", // Updated API endpoint
@@ -198,6 +197,7 @@ const App = () => {
           );
           // console.log("Data saved successfully:", response.data);
           await setAllData(response.data.data);
+          setLoading(false); // Show loader
 
           await mapFunc(response.data.data, userLocation, rad);
         } else {
@@ -210,6 +210,7 @@ const App = () => {
               to: userData?.dropLocation,
             }
           );
+          setLoading(false);
           // console.log("Data saved successfully:", response.data);
           await setAllData(response.data.data);
 
@@ -217,7 +218,7 @@ const App = () => {
         }
       }
     } catch (error) {
-      setLoading(false);
+      // setLoading(false);
       console.log("No user Data to send");
       console.error("Error saving data:", error);
     }
